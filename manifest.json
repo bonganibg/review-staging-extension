@@ -1,0 +1,21 @@
+{
+  "manifest_version": 3,
+  "version": "1.0.0",
+  "name": "A Review Stager",
+  "author": "BonganiBG",
+  "description": "Lets you stage your reviews without the need to bulk accept reviews, allow for metrics to be better recorded",
+  "permissions": ["tabs","storage", "activeTab", "scripting"],
+  "content_scripts":[
+      {
+          "matches": ["https://*.hyperiondev.cogrammar.com/reviewer/dashboard/*"],
+          "js": ["src/js/content.js"],
+          "css": ["src/css/styles.css"]
+      }
+  ],
+
+  "action": {
+      "default_popup": "./popup.html",
+      "default_title": "A Review Stager"
+
+  }
+}
