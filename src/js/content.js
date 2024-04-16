@@ -18,6 +18,8 @@ backlogTableHeading.style.marginTop = "50px";
 backlogTableHeading.style.marginBottom = "50px";
 backlogTable.parentNode.insertBefore(backlogTableHeading, backlogTable);
 
+setSortEventListeners()
+
 let stagedReviews = undefined;
 
 (() => {
@@ -25,6 +27,84 @@ let stagedReviews = undefined;
     setUpEventListeners()
     loadStagedAndBacklogTableReviews();
 })()
+
+function setSortEventListeners(){// 5 - Task, 6 - Submitted, 7 - Assigned, 8 - Deadline    
+    const headers = backlogTable.querySelectorAll("thead th");    
+    const taskHeader = headers[4];
+    const submittedHeader = headers[5];
+    const assignedHeader = headers[6];
+    const deadlineHeader = headers[7];
+
+    let ascending = false;
+
+    taskHeader.addEventListener("click", () => {
+        sortReviews(4, ascending);
+        ascending = !ascending;
+    })
+
+    submittedHeader.addEventListener("click", () => {
+        sortReviews(5, ascending);
+        ascending = !ascending;    
+    })
+
+    assignedHeader.addEventListener("click", () => {
+        sortReviews(6, ascending);
+        ascending = !ascending;    
+    })
+
+    deadlineHeader.addEventListener("click", () => {
+        sortReviews(7, ascending);
+        ascending = !ascending;    
+    })
+}
+
+
+function sortReviews(tableIndex, isAscending){    
+    const rows = backlogTable.querySelectorAll("tbody tr");
+    let sortedRows = Array.from(rows);    
+
+    sortedRows = merge_sort(sortedRows, tableIndex);
+
+    backlogTable.querySelector("tbody").innerHTML = "";
+
+    sortedRows = isAscending ? sortedRows : sortedRows.reverse();
+    
+    for (let id = 0; id < sortedRows.length; id++) {
+        const element = sortedRows[id];
+        backlogTable.querySelector("tbody").appendChild(element);        
+    }
+}
+
+function merge_sort(array, index){
+    if (array.length === 1)
+        return array;    
+
+    const middle = Math.floor(array.length / 2);
+    const left = array.slice(0, middle);
+    const right = array.slice(middle);
+
+    return merge(merge_sort(left, index), merge_sort(right, index), index);
+}
+
+function merge(left, right, index){
+    const result = [];    
+
+    while (left.length && right.length) {
+
+        if (getValue(index, left[0]) < getValue(index, right[0])) {
+            result.push(left.shift());
+        } else {
+            result.push(right.shift());
+        }
+    }
+
+    return [...result, ...left, ...right];
+}
+
+function getValue(index, row){    
+    let value = row.cells[index].textContent;    
+    return value;
+}
 
 /**
  * Gets a list of staged reviews from local storage
